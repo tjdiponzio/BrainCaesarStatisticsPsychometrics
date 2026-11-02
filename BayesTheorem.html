@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Bayes' Theorem & Clinical Calculator for Psychotherapists</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { user-select: none; -webkit-user-select: none; }
+        button, select, input { touch-action: manipulation; }
+    </style>
+</head>
+<body class="bg-[#121212] text-[#e0e0e0] font-sans min-h-screen flex flex-col">
+
+    <!-- Header Frame -->
+    <header class="bg-[#0f172a] px-6 py-4 border-b border-gray-800">
+        <h1 class="text-xl sm:text-2xl font-bold text-white">Bayes' Theorem & Clinical Calculator</h1>
+        <p class="text-xs sm:text-sm text-gray-400 mt-1">Translating research sensitivity and setting prevalence into real-world diagnostic certainty[cite: 1].</p>
+        
+        <!-- Tab Navigation -->
+        <div class="flex gap-2 mt-4">
+            <button id="tab-custom" onclick="switchTab('custom')" class="px-4 py-2 rounded-lg text-sm font-bold bg-[#0284c7] text-white transition-all shadow">
+                Custom Calculator
+            </button>
+            <button id="tab-inst" onclick="switchTab('instrument')" class="px-4 py-2 rounded-lg text-sm font-bold bg-[#334155] text-gray-300 transition-all shadow">
+                Instrument Lookup
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow p-4 sm:p-6 max-w-5xl mx-auto w-full space-y-6">
+
+        <!-- ==================== CUSTOM CALCULATOR TAB ==================== -->
+        <section id="panel-custom" class="space-y-6">
+            <!-- Inputs Card -->
+            <div class="bg-[#1e1e1e] p-5 sm:p-6 rounded-xl border border-gray-800 shadow-lg">
+                <h2 class="text-lg font-bold text-white mb-1">Custom Bayes Theorem Calculator</h2>
+                <p class="text-xs text-gray-400 mb-4">Enter your values, then press Calculate to see the results[cite: 1].</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <!-- Sensitivity (B) -->
+                    <div class="bg-[#252525] p-4 rounded-lg border border-gray-700">
+                        <label id="lbl-b-title" class="block text-xs font-bold text-[#55ff55] mb-1">B Sensitivity (%)</label>
+                        <span class="text-[10px] text-gray-400 block mb-2">True positive rate[cite: 1].</span>
+                        <input id="input-b" type="number" value="85" class="w-full bg-[#0f172a] border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-[#0284c7]">
+                    </div>
+
+                    <!-- Prevalence (C) -->
+                    <div class="bg-[#252525] p-4 rounded-lg border border-gray-700">
+                        <label id="lbl-c-title" class="block text-xs font-bold text-[#55ffff] mb-1">C Prevalence (%)</label>
+                        <span class="text-[10px] text-gray-400 block mb-2">Prior probability in setting[cite: 1].</span>
+                        <input id="input-c" type="number" value="20" class="w-full bg-[#0f172a] border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-[#0284c7]">
+                    </div>
+
+                    <!-- D Total Prob / Specificity -->
+                    <div class="bg-[#252525] p-4 rounded-lg border border-gray-700">
+                        <div class="flex justify-between items-center mb-1">
+                            <label id="lbl-d-title" class="text-xs font-bold text-[#ffff55]">D Total Prob (%)</label>
+                            <button onclick="toggleDMode()" id="btn-d-mode" class="text-[10px] text-[#38bdf8] underline hover:text-blue-300">Enter D Directly</button>
+                        </div>
+                        <span id="lbl-d-desc" class="text-[10px] text-gray-400 block mb-2">Calculated via Specificity & Prevalence[cite: 1].</span>
+                        
+                        <div id="container-spec">
+                            <label class="block text-[11px] font-bold text-[#94a3b8] mb-1">Specificity (%)</label>
+                            <input id="input-spec" type="number" value="90" class="w-full bg-[#0f172a] border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-[#0284c7]">
+                        </div>
+                        <div id="container-d-direct" class="hidden">
+                            <input id="input-d" type="number" value="31.0" class="w-full bg-[#0f172a] border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-[#0284c7]">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 flex flex-wrap items-center gap-4">
+                    <button onclick="calculateCustom()" class="bg-[#0284c7] hover:bg-sky-600 active:scale-95 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow transition-all">
+                        Calculate
+                    </button>
+                    <span id="custom-status" class="text-xs text-[#ffaa00]"></span>
+                </div>
+                <div id="custom-error" class="text-xs font-bold text-[#f87171] mt-2"></div>
+            </div>
+
+            <!-- Bayes Theorem Visual Diagram Card -->
+            <div class="bg-[#1e1e1e] p-5 sm:p-6 rounded-xl border border-gray-800 shadow-lg">
+                <h3 class="text-sm font-bold text-[#38bdf8] uppercase tracking-wider mb-1">Bayes' Theorem</h3>
+                <p class="text-xs text-gray-400 mb-4">Each part is shown with its mathematical term and psychology term. Dx = condition; + = positive screen[cite: 1].</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs mb-4">
+                    <div class="bg-[#252525] p-3 rounded border border-[#ff5555]">
+                        <span class="font-bold text-[#ff5555]">A | P(Dx | +)</span>
+                        <div class="font-bold text-white mt-1">Posterior</div>
+                        <div class="text-[10px] text-gray-400">PPV (Positive Predictive Value)[cite: 1]</div>
+                        <div id="res-box-a" class="text-lg font-mono font-bold text-[#ff5555] mt-2">—</div>
+                    </div>
+                    <div class="bg-[#252525] p-3 rounded border border-[#55ff55]">
+                        <span class="font-bold text-[#55ff55]">B | P(+ | Dx)</span>
+                        <div class="font-bold text-white mt-1">Likelihood</div>
+                        <div class="text-[10px] text-gray-400">Sensitivity[cite: 1]</div>
+                        <div id="res-box-b" class="text-lg font-mono font-bold text-[#55ff55] mt-2">—</div>
+                    </div>
+                    <div class="bg-[#252525] p-3 rounded border border-[#55ffff]">
+                        <span class="font-bold text-[#55ffff]">C | P(Dx)</span>
+                        <div class="font-bold text-white mt-1">Prior</div>
+                        <div class="text-[10px] text-gray-400">Prevalence (Base Rate)[cite: 1]</div>
+                        <div id="res-box-c" class="text-lg font-mono font-bold text-[#55ffff] mt-2">—</div>
+                    </div>
+                    <div class="bg-[#252525] p-3 rounded border border-[#ffff55]">
+                        <span class="font-bold text-[#ffff55]">D | P(+)</span>
+                        <div class="font-bold text-white mt-1">Evidence</div>
+                        <div class="text-[10px] text-gray-400">Total Positive Prob[cite: 1]</div>
+                        <div id="res-box-d" class="text-lg font-mono font-bold text-[#ffff55] mt-2">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Results Panel (Hidden by default until calculated) -->
+            <div id="custom-results-panel" class="bg-[#1e1e1e] p-5 sm:p-6 rounded-xl border border-gray-800 shadow-lg hidden space-y-4">
+                <h3 class="text-sm font-bold text-[#38bdf8] uppercase tracking-wider">Results</h3>
+                
+                <div class="bg-black p-4 rounded-lg font-mono text-xs space-y-1 overflow-x-auto">
+                    <span class="text-gray-400 block mb-2 font-sans font-bold text-[11px]">CALCULATIONS (COLOR-CODED)[cite: 1]</span>
+                    <div id="custom-steps-content" class="space-y-1"></div>
+                </div>
+
+                <div class="bg-[#1e293b] p-4 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <span class="text-xs text-gray-300 block">Calculated Posterior Probability (A):[cite: 1]</span>
+                        <span id="custom-final-posterior" class="text-2xl font-mono font-bold text-[#ff5555]">—</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="applyCustomSequenceUpdate()" class="bg-[#0284c7] hover:bg-sky-600 text-white font-bold px-4 py-2 rounded text-xs shadow">
+                            Bayesian Sequence Updating
+                        </button>
+                        <button onclick="resetCustomSequence()" id="btn-custom-reset" disabled class="bg-[#334155] text-gray-400 px-3 py-2 rounded text-xs disabled:opacity-50">
+                            Restart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Trace Box -->
+                <div class="bg-[#0f172a] p-4 rounded-lg border border-gray-800">
+                    <span class="text-[11px] font-bold text-[#38bdf8] block">SEQUENTIAL BAYESIAN UPDATING TRACE[cite: 1]</span>
+                    <span class="text-[10px] text-gray-400 block mb-2">Each posterior (A) becomes the next prior (C)[cite: 1].</span>
+                    <div id="custom-trace-content" class="space-y-1 font-mono text-xs"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== INSTRUMENT LOOKUP TAB ==================== -->
+        <section id="panel-instrument" class="space-y-6 hidden">
+            <!-- Instrument Inputs Card -->
+            <div class="bg-[#1e1e1e] p-5 sm:p-6 rounded-xl border border-gray-800 shadow-lg">
+                <h2 class="text-lg font-bold text-white mb-1">Instrument Lookup</h2>
+                <p class="text-xs text-gray-400 mb-4">Choose an instrument, a cutpoint, and your setting's prevalence, then press Calculate[cite: 1].</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Left: Instrument & Cutpoint selection -->
+                    <div class="bg-[#252525] p-4 rounded-lg border border-gray-700 space-y-3">
+                        <label class="block text-xs font-bold text-[#38bdf8]">SELECT INSTRUMENT:[cite: 1]</label>
+                        <select id="select-instrument" onchange="onInstrumentChange()" class="w-full bg-[#0f172a] border border-gray-700 rounded px-3 py-2 text-white text-sm focus:outline-none focus:border-[#0284c7]">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+
+                        <label class="block text-xs font-bold text-gray-400">SELECT CUTPOINT[cite: 1]</label>
+                        <select id="select-cutpoint" size="5" class="w-full bg-[#0f172a] border border-gray-700 rounded px-2 py-1 text-white text-xs font-mono focus:outline-none focus:border-[#0284c7]">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                    </div>
+
+                    <!-- Right: Prevalence & Trigger -->
+                    <div class="bg-[#252525] p-4 rounded-lg border border-gray-700 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-[#55ffff]">C Setting Prevalence (%)[cite: 1]</label>
+                            <span class="text-[10px] text-gray-400 block">Prior probability in your setting[cite: 1].</span>
+                            <input id="input-inst-prev" type="number" value="15" class="w-full bg-[#0f172a] border border-gray-700 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-[#0284c7]">
+                        </div>
+
+                        <div class="mt-4">
+                            <button onclick="calculateInstrument()" class="bg-[#0284c7] hover:bg-sky-600 active:scale-95 text-white font-bold px-6 py-2.5 rounded-lg text-sm shadow transition-all">
+                                Calculate
+                            </button>
+                            <span id="inst-status" class="text-xs text-[#ffaa00] block mt-2"></span>
+                            <div id="inst-error" class="text-xs font-bold text-[#f87171] mt-1"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instrument Results Panel -->
+            <div id="instrument-results-panel" class="bg-[#1e1e1e] p-5 sm:p-6 rounded-xl border border-gray-800 shadow-lg hidden space-y-4">
+                <h3 class="text-sm font-bold text-[#38bdf8] uppercase tracking-wider">Results</h3>
+
+                <div class="bg-[#252525] p-4 rounded-lg border border-gray-700 space-y-4">
+                    <h4 id="inst-result-heading" class="text-base font-bold text-white">Cutpoint Analysis</h4>
+
+                    <!-- Metric Cards Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <div class="bg-[#0f172a] p-3 rounded">
+                            <span class="text-[10px] text-gray-400 block">Sensitivity (B)[cite: 1]</span>
+                            <span id="card-sens" class="font-mono font-bold text-sm text-[#55ff55]">—</span>
+                        </div>
+                        <div class="bg-[#0f172a] p-3 rounded">
+                            <span class="text-[10px] text-gray-400 block">Specificity[cite: 1]</span>
+                            <span id="card-spec" class="font-mono font-bold text-sm text-[#94a3b8]">—</span>
+                        </div>
+                        <div class="bg-[#0f172a] p-3 rounded">
+                            <span class="text-[10px] text-gray-400 block">Prevalence (C)[cite: 1]</span>
+                            <span id="card-prev" class="font-mono font-bold text-sm text-[#55ffff]">—</span>
+                        </div>
+                        <div class="bg-[#0f172a] p-3 rounded">
+                            <span class="text-[10px] text-gray-400 block">Total Pos (D)[cite: 1]</span>
+                            <span id="card-tot" class="font-mono font-bold text-sm text-[#ffff55]">—</span>
+                        </div>
+                    </div>
+
+                    <!-- Calculations Box -->
+                    <div class="bg-black p-4 rounded-lg font-mono text-xs space-y-1 overflow-x-auto">
+                        <span class="text-gray-400 block mb-2 font-sans font-bold text-[11px]">CALCULATIONS (COLOR-CODED)[cite: 1]</span>
+                        <div id="inst-steps-content" class="space-y-1"></div>
+                    </div>
+
+                    <!-- Final Posterior Box -->
+                    <div class="bg-black p-4 rounded-lg space-y-3">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">CALCULATED POSTERIOR PROBABILITY (PPV / A)[cite: 1]</span>
+                        <p id="inst-desc" class="text-xs text-gray-300"></p>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <span id="inst-final-posterior" class="text-2xl font-mono font-bold text-[#ff5555]">—</span>
+                            <div class="flex gap-2">
+                                <button onclick="applyInstSequenceUpdate()" class="bg-[#0284c7] hover:bg-sky-600 text-white font-bold px-4 py-2 rounded text-xs shadow">
+                                    Bayesian Sequence Updating
+                                </button>
+                                <button onclick="resetInstSequence()" id="btn-inst-reset" disabled class="bg-[#334155] text-gray-400 px-3 py-2 rounded text-xs disabled:opacity-50">
+                                    Restart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trace Box -->
+                    <div class="bg-[#0f172a] p-4 rounded-lg border border-gray-800">
+                        <span class="text-[11px] font-bold text-[#38bdf8] block">SEQUENTIAL BAYESIAN UPDATING TRACE[cite: 1]</span>
+                        <div id="inst-trace-content" class="space-y-1 font-mono text-xs mt-2"></div>
+                    </div>
+
+                    <div id="inst-source-text" class="text-[11px] text-[#38bdf8] italic pt-2"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Application Script Logic -->
+    <script>
+        // Instrument Data Repository (matching Python backend dataset)[cite: 1]
+        const INSTRUMENTS = {
+            "PHQ-9 (Depression)": {
+                "condition": "Major Depression",
+                "source": "Kroenke et al. (2001)",
+                "cutpoints": [
+                    {"score": "≥ 9", "sensitivity": 95, "specificity": 84},
+                    {"score": "≥ 10", "sensitivity": 88, "specificity": 88},
+                    {"score": "≥ 11", "sensitivity": 83, "specificity": 89},
+                    {"score": "≥ 12", "sensitivity": 83, "specificity": 92},
+                    {"score": "≥ 13", "sensitivity": 78, "specificity": 93},
+                    {"score": "≥ 14", "sensitivity": 73, "specificity": 94},
+                    {"score": "≥ 15", "sensitivity": 68, "specificity": 95}
+                ]
+            },
+            "GAD-7 (Anxiety)": {
+                "condition": "Generalized Anxiety Disorder",
+                "source": "Spitzer et al. (2006)",
+                "cutpoints": [
+                    {"score": "≥ 8", "sensitivity": 92, "specificity": 76},
+                    {"score": "≥ 9", "sensitivity": 90, "specificity": 79},
+                    {"score": "≥ 10", "sensitivity": 89, "specificity": 82},
+                    {"score": "≥ 11", "sensitivity": 82, "specificity": 85},
+                    {"score": "≥ 12", "sensitivity": 73, "specificity": 89},
+                    {"score": "≥ 13", "sensitivity": 66, "specificity": 91},
+                    {"score": "≥ 14", "sensitivity": 56, "specificity": 92},
+                    {"score": "≥ 15", "sensitivity": 48, "specificity": 95}
+                ]
+            },
+            "MSI-BPD": {
+                "condition": "Borderline Personality Disorder",
+                "source": "Zanarini et al. (2003)",
+                "cutpoints": [{"score": "≥ 7", "sensitivity": 81, "specificity": 85}]
+            },
+            "PCL-5 (PTSD)": {
+                "condition": "Post-Traumatic Stress Disorder",
+                "source": "Boyd et al. (2023)",
+                "cutpoints": [
+                    {"score": "≥ 10.5", "sensitivity": 100.0, "specificity": 12.5},
+                    {"score": "≥ 20.5", "sensitivity": 98.4, "specificity": 29.8},
+                    {"score": "≥ 30.5", "sensitivity": 95.3, "specificity": 46.2},
+                    {"score": "≥ 40.5", "sensitivity": 86.0, "specificity": 63.3},
+                    {"score": "≥ 50.5", "sensitivity": 71.5, "specificity": 78.1}
+                ]
+            },
+            "Hamilton Depression": {
+                "condition": "Major Depression",
+                "source": "Zimmerman et al. (2013)",
+                "cutpoints": [
+                    {"score": "≥ 17", "sensitivity": 60.5, "specificity": 66},
+                    {"score": "≥ 24", "sensitivity": 50.9, "specificity": 86.3}
+                ]
+            },
+            "Y-BOCS (OCD)": {
+                "condition": "Obsessive Compulsive Disorder",
+                "source": "Castro-Rodrigues et al. (2018)",
+                "cutpoints": [{"score": "≥ 13", "sensitivity": 85, "specificity": 97}]
+            },
+            "AMRS (Acute Mania)": {
+                "condition": "Acute Manic Episode",
+                "source": "Altman et al. (1997)",
+                "cutpoints": [{"score": "≥ 5", "sensitivity": 85.5, "specificity": 87.3}]
+            },
+            "RTID": {
+                "condition": "Major Depression",
+                "source": "Boxell & DiPonzio (2026) - Theoretical / Needs replication study",
+                "cutpoints": [
+                    {"score": "≥ -300ms", "sensitivity": 95, "specificity": 18},
+                    {"score": "≥ -100ms", "sensitivity": 76, "specificity": 27},
+                    {"score": "≥ 0ms", "sensitivity": 65, "specificity": 42},
+                    {"score": "≥ 200ms", "sensitivity": 46, "specificity": 57}
+                ]
+            },
+            "AUDIT": {
+                "condition": "Alcohol Use Disorder",
+                "source": "Fujii et al. (2016)",
+                "cutpoints": [
+                    {"score": "≥ 5", "sensitivity": 100, "specificity": 76.3},
+                    {"score": "≥ 8", "sensitivity": 95.5, "specificity": 87}
+                ]
+            }
+        };
+
+        // Colors corresponding to terms
+        const COLORS = {
+            A: "#ff5555",
+            B: "#55ff55",
+            C: "#55ffff",
+            D: "#ffff55",
+            spec: "#94a3b8",
+            dim: "#6b7280"
+        };
+
+        // State Tracking Classes
+        class SequenceTracker {
+            constructor() { this.rounds = []; this.index = 0; }
+            record(prior, posterior) {
+                const entry = { prior, posterior };
+                if (this.index >= this.rounds.length) {
+                    this.rounds.push(entry);
+                    this.index = this.rounds.length - 1;
+                } else {
+                    this.rounds[this.index] = entry;
+                }
+            }
+            advance() { this.index = this.rounds.length; }
+            restart() {
+                if (this.rounds.length > 0) this.rounds = [this.rounds[Math.min(this.index, this.rounds.length - 1)]];
+                this.index = 0;
+            }
+        }
+
+        let customTracker = new SequenceTracker();
+        let instTracker = new SequenceTracker();
+        let useSpecificity = true;
+        let lastCustomPosterior = 0;
+        let lastInstPosterior = 0;
+
+        // UI Tab Swapping
+        function switchTab(tab) {
+            const customPanel = document.getElementById('panel-custom');
+            const instPanel = document.getElementById('panel-instrument');
+            const btnCustom = document.getElementById('tab-custom');
+            const btnInst = document.getElementById('tab-inst');
+
+            if (tab === 'custom') {
+                customPanel.classList.remove('hidden');
+                instPanel.classList.add('hidden');
+                btnCustom.className = "px-4 py-2 rounded-lg text-sm font-bold bg-[#0284c7] text-white shadow";
+                btnInst.className = "px-4 py-2 rounded-lg text-sm font-bold bg-[#334155] text-gray-300 shadow";
+            } else {
+                customPanel.classList.add('hidden');
+                instPanel.classList.remove('hidden');
+                btnInst.className = "px-4 py-2 rounded-lg text-sm font-bold bg-[#0284c7] text-white shadow";
+                btnCustom.className = "px-4 py-2 rounded-lg text-sm font-bold bg-[#334155] text-gray-300 shadow";
+            }
+        }
+
+        // Percentage parser helper
+        function parsePercent(valStr, label) {
+            const clean = valStr.toString().trim().replace('%','');
+            const num = parseFloat(clean);
+            if (isNaN(num)) throw new Error(`${label} must be a valid number.`);
+            if (num < 0 || num > 100) throw new Error(`${label} must be between 0 and 100.`);
+            return num / 100.0;
+        }
+
+        // Toggle D mode (Specificity vs Direct)
+        function toggleDMode() {
+            useSpecificity = !useSpecificity;
+            const containerSpec = document.getElementById('container-spec');
+            const containerDirect = document.getElementById('container-d-direct');
+            const btnMode = document.getElementById('btn-d-mode');
+            const desc = document.getElementById('lbl-d-desc');
+            const titleD = document.getElementById('lbl-d-title');
+
+            if (useSpecificity) {
+                containerSpec.classList.remove('hidden');
+                containerDirect.classList.add('hidden');
+                btnMode.innerText = "Enter D Directly";
+                desc.innerText = "Calculated via Specificity & Prevalence[cite: 1].";
+                titleD.innerText = "D Total Prob (%)";
+            } else {
+                containerSpec.classList.add('hidden');
+                containerDirect.classList.remove('hidden');
+                btnMode.innerText = "Use Specificity";
+                desc.innerText = "Total proportion of positive tests.";
+                titleD.innerText = "D Total Prob (%) [Direct]";
+            }
+        }
+
+        // Custom Calculator execution
+        function calculateCustom() {
+            const errDiv = document.getElementById('custom-error');
+            errDiv.innerText = "";
+
+            try {
+                const b = parsePercent(document.getElementById('input-b').value, "Sensitivity (B)");
+                const c = parsePercent(document.getElementById('input-c').value, "Prevalence (C)");
+                
+                let spec, d;
+                if (useSpecificity) {
+                    spec = parsePercent(document.getElementById('input-spec').value, "Specificity");
+                    d = (b * c) + ((1.0 - spec) * (1.0 - c));
+                } else {
+                    spec = null;
+                    d = parsePercent(document.getElementById('input-d').value, "Total Positive Probability (D)");
+                }
+
+                if (d <= 0) throw new Error("Total positive probability (D) is 0, posterior cannot be calculated.");
+                if (d + 1e-9 < b * c) throw new Error("D cannot be smaller than B × C (results in >100% posterior).");
+
+                const a = (b * c) / d;
+                lastCustomPosterior = a * 100.0;
+                customTracker.record(c * 100.0, a * 100.0);
+
+                // Update Diagram Boxes
+                document.getElementById('res-box-a').innerText = `${(a*100).toFixed(1)}%`;
+                document.getElementById('res-box-b').innerText = `${(b*100).toFixed(1)}%`;
+                document.getElementById('res-box-c').innerText = `${(c*100).toFixed(1)}%`;
+                document.getElementById('res-box-d').innerText = `${(d*100).toFixed(1)}%`;
+
+                // Render Steps
+                renderSteps('custom-steps-content', b, c, d, a, spec, "the condition");
+
+                // Render Final Output & Trace
+                document.getElementById('custom-final-posterior').innerText = `${(a*100).toFixed(1)}%`;
+                renderTrace('custom-trace-content', customTracker);
+
+                document.getElementById('btn-custom-reset').disabled = customTracker.rounds.length <= 1;
+                document.getElementById('custom-results-panel').classList.remove('hidden');
+
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        // Step generator helper with colored spans
+        function renderSteps(containerId, b, c, d, a, spec, conditionText) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+
+            let html = "";
+            if (spec !== null) {
+                const fp = 1.0 - spec;
+                html += `<div><span style="color:#38bdf8">STEP 1 — Total positive test probability (D)[cite: 1]</span></div>`;
+                html += `<div><span style="color:${COLORS.D}">D</span> = (<span style="color:${COLORS.B}">B</span> × <span style="color:${COLORS.C}">C</span>) + ((1 − <span style="color:${COLORS.spec}">Spec</span>) × (1 − <span style="color:${COLORS.C}">C</span>))</div>`;
+                html += `<div><span style="color:${COLORS.D}">D</span> = (${b.toFixed(4)} × ${c.toFixed(4)}) + ((1 − ${spec.toFixed(4)}) × (1 − ${c.toFixed(4)}))</div>`;
+                html += `<div><span style="color:${COLORS.D}">D</span> = ${(b*c).toFixed(4)} + ${(fp*(1-c)).toFixed(4)} <span style="color:${COLORS.dim}">(true + false positives)[cite: 1]</span></div>`;
+                html += `<div><span style="color:${COLORS.D}">D</span> = <span style="color:${COLORS.D}">${d.toFixed(4)} (${(d*100).toFixed(1)}%)</span></div><br/>`;
+            } else {
+                html += `<div><span style="color:#38bdf8">STEP 1 — Total positive test probability (D)[cite: 1]</span></div>`;
+                html += `<div><span style="color:${COLORS.D}">D</span> = <span style="color:${COLORS.D}">${d.toFixed(4)} (${(d*100).toFixed(1)}%)</span> <span style="color:${COLORS.dim}">(entered direct)[cite: 1]</span></div><br/>`;
+            }
+
+            html += `<div><span style="color:#38bdf8">STEP 2 — Posterior probability (A)[cite: 1]</span></div>`;
+            html += `<div><span style="color:${COLORS.A}">A</span> = (<span style="color:${COLORS.B}">B</span> × <span style="color:${COLORS.C}">C</span>) / <span style="color:${COLORS.D}">D</span></div>`;
+            html += `<div><span style="color:${COLORS.A}">A</span> = (${b.toFixed(4)} × ${c.toFixed(4)}) / ${d.toFixed(4)}</div>`;
+            html += `<div><span style="color:${COLORS.A}">A</span> = <span style="color:${COLORS.A}">${a.toFixed(4)} (${(a*100).toFixed(1)}%)</span></div><br/>`;
+
+            html += `<div><span style="color:#38bdf8">STEP 3 — Interpretation[cite: 1]</span></div>`;
+            html += `<div>A positive screen moves probability of ${conditionText} from <span style="color:${COLORS.C}">${(c*100).toFixed(1)}%</span> (prior) to <span style="color:${COLORS.A}">${(a*100).toFixed(1)}%</span> (posterior)[cite: 1].</div>`;
+
+            container.innerHTML = html;
+        }
+
+        function renderTrace(containerId, tracker) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            let prev = null;
+            tracker.rounds.forEach((r, idx) => {
+                let note = "";
+                if (prev !== null) {
+                    note = Math.abs(r.prior - prev) < 0.05 ? " (prior = prev posterior)" : " (prior entered manually)";
+                }
+                container.innerHTML += `<div>Round ${idx+1}: <span style="color:${COLORS.C}">Prior ${r.prior.toFixed(1)}%</span> ➔ <span style="color:${COLORS.A}">Posterior ${r.posterior.toFixed(1)}%</span><span style="color:${COLORS.dim}">${note}</span></div>`;
+                prev = r.posterior;
+            });
+        }
+
+        function applyCustomSequenceUpdate() {
+            document.getElementById('input-c').value = lastCustomPosterior.toFixed(1);
+            customTracker.advance();
+            document.getElementById('custom-results-panel').classList.add('hidden');
+            document.getElementById('custom-status').innerText = `Updated Prevalence (C) to ${lastCustomPosterior.toFixed(1)}%. Enter new sensitivity/specificity and calculate[cite: 1].`;
+        }
+
+        function resetCustomSequence() {
+            customTracker.restart();
+            renderTrace('custom-trace-content', customTracker);
+            document.getElementById('btn-custom-reset').disabled = customTracker.rounds.length <= 1;
+        }
+
+        // ------------------ INSTRUMENT TAB LOGIC ------------------
+        function initInstruments() {
+            const selectInst = document.getElementById('select-instrument');
+            selectInst.innerHTML = "";
+            Object.keys(INSTRUMENTS).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.innerText = name;
+                selectInst.appendChild(opt);
+            });
+            onInstrumentChange();
+        }
+
+        function onInstrumentChange() {
+            const instName = document.getElementById('select-instrument').value;
+            const instData = INSTRUMENTS[instName];
+            const selectCp = document.getElementById('select-cutpoint');
+            selectCp.innerHTML = "";
+
+            instData.cutpoints.forEach((cp, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.innerText = `Cutpoint ${cp.score} (Sens: ${cp.sensitivity}%, Spec: ${cp.specificity}%)[cite: 1]`;
+                selectCp.appendChild(opt);
+            });
+            if (instData.cutpoints.length > 0) selectCp.selectedIndex = Math.min(1, instData.cutpoints.length - 1);
+        }
+
+        function calculateInstrument() {
+            const errDiv = document.getElementById('inst-error');
+            errDiv.innerText = "";
+
+            try {
+                const c = parsePercent(document.getElementById('input-inst-prev').value, "Setting Prevalence (C)");
+                const instName = document.getElementById('select-instrument').value;
+                const instData = INSTRUMENTS[instName];
+                const cpIdx = document.getElementById('select-cutpoint').value;
+
+                if (cpIdx === "") throw new Error("Please select a cutpoint[cite: 1].");
+                const cp = instData.cutpoints[cpIdx];
+
+                const b = cp.sensitivity / 100.0;
+                const spec = cp.specificity / 100.0;
+                const d = (b * c) + ((1.0 - spec) * (1.0 - c));
+
+                if (d <= 0) throw new Error("Total positive probability (D) is 0.");
+
+                const a = (b * c) / d;
+                lastInstPosterior = a * 100.0;
+                instTracker.record(c * 100.0, a * 100.0);
+
+                // Populate UI Cards
+                document.getElementById('inst-result-heading').innerText = `${instName} — Cutpoint ${cp.score} (${instData.condition})[cite: 1]`;
+                document.getElementById('card-sens').innerText = `${cp.sensitivity}%`;
+                document.getElementById('card-spec').innerText = `${cp.specificity}%`;
+                document.getElementById('card-prev').innerText = `${(c*100).toFixed(1)}%`;
+                document.getElementById('card-tot').innerText = `${(d*100).toFixed(1)}%`;
+
+                document.getElementById('inst-desc').innerText = `Probability that the client truly meets criteria for ${instData.condition} given a score at or above this cutoff[cite: 1].`;
+                document.getElementById('inst-final-posterior').innerText = `${(a*100).toFixed(1)}%`;
+                document.getElementById('inst-source-text').innerText = `Source: ${instData.source}`;
+
+                renderSteps('inst-steps-content', b, c, d, a, spec, instData.condition);
+                renderTrace('inst-trace-content', instTracker);
+
+                document.getElementById('btn-inst-reset').disabled = instTracker.rounds.length <= 1;
+                document.getElementById('instrument-results-panel').classList.remove('hidden');
+
+            } catch (err) {
+                errDiv.innerText = err.message;
+            }
+        }
+
+        function applyInstSequenceUpdate() {
+            document.getElementById('input-inst-prev').value = lastInstPosterior.toFixed(1);
+            instTracker.advance();
+            document.getElementById('instrument-results-panel').classList.add('hidden');
+            document.getElementById('inst-status').innerText = `Updated Prevalence (C) to ${lastInstPosterior.toFixed(1)}%. Choose next instrument and calculate[cite: 1].`;
+        }
+
+        function resetInstSequence() {
+            instTracker.restart();
+            renderTrace('inst-trace-content', instTracker);
+            document.getElementById('btn-inst-reset').disabled = instTracker.rounds.length <= 1;
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initInstruments();
+            calculateCustom(); // run initial preview calculation
+        });
+    </script>
+</body>
+</html>
