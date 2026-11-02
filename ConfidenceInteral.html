@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Psychometric Descriptive Statistics & Confidence Interval Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { user-select: none; -webkit-user-select: none; }
+        button, select, input { touch-action: manipulation; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-[#f1f5f9] font-sans min-h-screen flex flex-col items-center p-3 sm:p-6">
+
+  <div class="w-full max-w-5xl bg-[#1e293b] shadow-xl rounded-xl overflow-hidden border border-slate-700 p-4 sm:p-8 space-y-6">
+
+    <!-- Header Section -->
+    <header class="space-y-2">
+      <span class="inline-block bg-[#0369a1] text-[#bae6fd] text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded">
+        PSYCHOMETRIC DECISION SUPPORT
+      </span>
+      <h1 class="text-xl sm:text-2xl font-bold text-white">
+        Descriptive Statistics & Confidence Interval Calculator
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-400">
+        Translate raw scores into z-scores, T-scores, SEM, and custom confidence intervals with normative preset lookups.
+      </p>
+    </header>
+
+    <!-- Formula Reference Banner -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-[#020617] p-3 sm:p-4 rounded-lg border border-slate-700 text-center">
+      <div class="p-2">
+        <div class="font-mono text-xs sm:text-sm font-bold text-red-400">z = (X − M) / SD</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Standardized z-Score</div>
+      </div>
+      <div class="p-2">
+        <div class="font-mono text-xs sm:text-sm font-bold text-green-400">T = 50 + 10(z)</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">T-Score Transformation</div>
+      </div>
+      <div class="p-2">
+        <div class="font-mono text-xs sm:text-sm font-bold text-sky-400">SEM = SD × √(1 − r)</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Standard Error of Measurement</div>
+      </div>
+      <div class="p-2">
+        <div class="font-mono text-xs sm:text-sm font-bold text-amber-400">CI = X ± z_crit · SEM</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Confidence Interval</div>
+      </div>
+    </div>
+
+    <!-- Main Calculator Card -->
+    <div class="bg-[#020617] p-4 sm:p-6 rounded-xl border border-slate-700 space-y-6">
+
+      <!-- Preset Selector Bar -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#334155] p-4 rounded-lg gap-3">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-white">Instrument / Normative Preset Lookup</h2>
+          <p class="text-xs text-slate-300">Select a validated psychological assessment or set custom parameters[cite: 2].</p>
+        </div>
+        <select id="preset-select" onchange="onPresetChange()" class="w-full sm:w-auto bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white text-xs sm:text-sm focus:outline-none focus:border-sky-400">
+          <option value="custom">Custom / Manual Parameter Configuration</option>
+          <option value="PHQ-9" selected>PHQ-9 (Patient Health Questionnaire - 9)</option>
+          <option value="GAD-7">GAD-7 (Generalized Anxiety Disorder - 7)</option>
+          <option value="PCL-5">PCL-5 (PTSD Checklist for DSM-5)</option>
+          <option value="BDI">BDI-II (Beck Depression Inventory-II)</option>
+          <option value="BAI">BAI (Beck Anxiety Inventory)</option>
+        </select>
+      </div>
+
+      <!-- Clinical Info Bar / Severity Badge / Citation -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#1e293b] p-4 rounded-lg border border-slate-700 gap-3">
+        <div>
+          <h3 id="preset-title" class="text-sm sm:text-base font-bold text-white">PHQ-9 (Patient Health Questionnaire - 9)</h3>
+          <p id="preset-citation" class="text-xs text-sky-400 italic mt-0.5">Citation: Kroenke et al. (2001)[cite: 2]</p>
+        </div>
+        <div id="severity-badge" class="bg-[#422006] text-[#fde047] text-xs font-bold px-3 py-1.5 rounded border border-amber-600/50">
+          Severity Level: Calculating...
+        </div>
+      </div>
+
+      <!-- Input Controls Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+        <!-- Input X -->
+        <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
+          <label class="block text-xs font-bold text-white mb-0.5">Raw Score (X)</label>
+          <span id="label-x-range" class="text-[10px] text-slate-400 block mb-2">Range: 0 to 27[cite: 2]</span>
+          <input id="input-x" type="number" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="12">
+        </div>
+
+        <!-- Input M -->
+        <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
+          <label class="block text-xs font-bold text-white mb-0.5">Normative Mean (M)</label>
+          <span class="text-[10px] text-slate-400 block mb-2">Population mean[cite: 2]</span>
+          <input id="input-m" type="number" step="0.1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="3.2">
+        </div>
+
+        <!-- Input SD -->
+        <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
+          <label class="block text-xs font-bold text-white mb-0.5">Standard Dev (SD)</label>
+          <span class="text-[10px] text-slate-400 block mb-2">Population SD[cite: 2]</span>
+          <input id="input-sd" type="number" step="0.1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="4.1">
+        </div>
+
+        <!-- Input r -->
+        <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
+          <label class="block text-xs font-bold text-sky-400 mb-0.5">Reliability (r / α)</label>
+          <span class="text-[10px] text-slate-400 block mb-2">Internal consistency[cite: 2]</span>
+          <input id="input-r" type="number" step="0.01" min="0" max="1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="0.89">
+        </div>
+
+        <!-- Confidence Level Selector -->
+        <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
+          <label class="block text-xs font-bold text-amber-400 mb-0.5">Confidence Level</label>
+          <span class="text-[10px] text-slate-400 block mb-2">Select critical z[cite: 2]</span>
+          <select id="zcrit-select" onchange="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400">
+            <option value="1.00">68% (z = 1.00)</option>
+            <option value="1.645">90% (z = 1.645)</option>
+            <option value="1.96" selected>95% (z = 1.96)</option>
+            <option value="2.58">99% (z = 2.58)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results Metrics Display -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-[#1e293b] p-4 rounded-lg border border-slate-700 text-center">
+          <div class="text-[11px] font-bold text-slate-400">z-Score</div>
+          <div id="res-z" class="font-mono text-xl sm:text-2xl font-bold text-red-400 mt-1">—</div>
+        </div>
+        <div class="bg-[#1e293b] p-4 rounded-lg border border-slate-700 text-center">
+          <div class="text-[11px] font-bold text-slate-400">T-Score (M=50, SD=10)</div>
+          <div id="res-t" class="font-mono text-xl sm:text-2xl font-bold text-green-400 mt-1">—</div>
+        </div>
+        <div class="bg-[#1e293b] p-4 rounded-lg border border-slate-700 text-center">
+          <div class="text-[11px] font-bold text-slate-400">SEM</div>
+          <div id="res-sem" class="font-mono text-xl sm:text-2xl font-bold text-sky-400 mt-1">—</div>
+        </div>
+        <div class="bg-[#1e293b] p-4 rounded-lg border border-slate-700 text-center">
+          <div class="text-[11px] font-bold text-slate-400">Confidence Interval</div>
+          <div id="res-ci" class="font-mono text-base sm:text-xl font-bold text-amber-400 mt-1">—</div>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Breakdown -->
+      <div class="bg-[#1e293b] p-4 sm:p-5 rounded-lg border border-slate-700 space-y-2">
+        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider mb-2">STEP-BY-STEP CALCULATION BREAKDOWN[cite: 2]</h4>
+        <div id="step-z" class="font-mono text-xs sm:text-sm text-slate-200">Step 1: z = (X − M) / SD</div>
+        <div id="step-t" class="font-mono text-xs sm:text-sm text-slate-200">Step 2: T = 50 + 10(z)</div>
+        <div id="step-sem" class="font-mono text-xs sm:text-sm text-slate-200">Step 3: SEM = SD × √(1 − r)</div>
+        <div id="step-ci" class="font-mono text-xs sm:text-sm text-slate-200">Step 4: CI = X ± z_crit × SEM</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Instrument Database matching the provided Python script[cite: 2]
+    const INSTRUMENT_DATABASE = {
+        "custom": {
+            "id": "custom",
+            "name": "Custom / Manual Parameter Configuration",
+            "m": 15.0,
+            "sd": 5.0,
+            "r": 0.85,
+            "defaultX": 24.0,
+            "rangeText": "Custom Raw Score",
+            "cutoffs": [{"max": Infinity, "label": "Custom Assessment Range"}],
+            "citation": "Custom Configuration (n.d.)"
+        },
+        "PHQ-9": {
+            "id": "PHQ-9",
+            "name": "PHQ-9 (Patient Health Questionnaire - 9)",
+            "m": 3.2,
+            "sd": 4.1,
+            "r": 0.89,
+            "defaultX": 12.0,
+            "rangeText": "Range: 0 to 27[cite: 2]",
+            "cutoffs": [
+                {min: 0, max: 4, label: "Minimal Depression (0–4)"},
+                {min: 5, max: 9, label: "Mild Depression (5–9)"},
+                {min: 10, max: 14, label: "Moderate Depression (10–14)"},
+                {min: 15, max: 19, label: "Moderately Severe Depression (15–19)"},
+                {min: 20, max: 27, label: "Severe Depression (20–27)"}
+            ],
+            "citation": "Kroenke et al. (2001)[cite: 2]"
+        },
+        "GAD-7": {
+            "id": "GAD-7",
+            "name": "GAD-7 (Generalized Anxiety Disorder - 7)",
+            "m": 2.9,
+            "sd": 4.3,
+            "r": 0.92,
+            "defaultX": 8.0,
+            "rangeText": "Range: 0 to 21[cite: 2]",
+            "cutoffs": [
+                {min: 0, max: 4, label: "Minimal Anxiety (0–4)"},
+                {min: 5, max: 9, label: "Mild Anxiety (5–9)"},
+                {min: 10, max: 14, label: "Moderate Anxiety (10–14)"},
+                {min: 15, max: 21, label: "Severe Anxiety (15–21)"}
+            ],
+            "citation": "Spitzer et al. (2006)[cite: 2]"
+        },
+        "PCL-5": {
+            "id": "PCL-5",
+            "name": "PCL-5 (PTSD Checklist for DSM-5)",
+            "m": 14.8,
+            "sd": 13.2,
+            "r": 0.94,
+            "defaultX": 38.0,
+            "rangeText": "Range: 0 to 80[cite: 2]",
+            "cutoffs": [
+                {min: 0, max: 30, label: "Below PTSD Clinical Cutoff (< 31)"},
+                {min: 31, max: 80, label: "Probable PTSD Diagnosis (≥ 31–33 Cutoff)"}
+            ],
+            "citation": "Blevins et al. (2015)[cite: 2]"
+        },
+        "BDI": {
+            "id": "BDI",
+            "name": "BDI-II (Beck Depression Inventory-II)",
+            "m": 12.5,
+            "sd": 9.8,
+            "r": 0.92,
+            "defaultX": 22.0,
+            "rangeText": "Range: 0 to 63[cite: 2]",
+            "cutoffs": [
+                {min: 0, max: 13, label: "Minimal Depression (0–13)"},
+                {min: 14, max: 19, label: "Mild Depression (14–19)"},
+                {min: 20, max: 28, label: "Moderate Depression (20–28)"},
+                {min: 29, max: 63, label: "Severe Depression (29–63)"}
+            ],
+            "citation": "Beck et al. (1996)[cite: 2]"
+        },
+        "BAI": {
+            "id": "BAI",
+            "name": "BAI (Beck Anxiety Inventory)",
+            "m": 13.1,
+            "sd": 10.2,
+            "r": 0.91,
+            "defaultX": 18.0,
+            "rangeText": "Range: 0 to 63[cite: 2]",
+            "cutoffs": [
+                {min: 0, max: 7, label: "Minimal Anxiety (0–7)"},
+                {min: 8, max: 15, label: "Mild Anxiety (8–15)"},
+                {min: 16, max: 25, label: "Moderate Anxiety (16–25)"},
+                {min: 26, max: 63, label: "Severe Anxiety (26–63)"}
+            ],
+            "citation": "Beck & Steer (1993)[cite: 2]"
+        }
+    };
+
+    function onPresetChange() {
+        const key = document.getElementById('preset-select').value;
+        const preset = INSTRUMENT_DATABASE[key] || INSTRUMENT_DATABASE['custom'];
+
+        document.getElementById('input-m').value = preset.m;
+        document.getElementById('input-sd').value = preset.sd;
+        document.getElementById('input-r').value = preset.r;
+        document.getElementById('input-x').value = preset.defaultX;
+
+        document.getElementById('label-x-range').innerText = preset.rangeText;
+        document.getElementById('preset-title').innerText = preset.name;
+        document.getElementById('preset-citation').innerText = `Citation: ${preset.citation}`;
+
+        calculate();
+    }
+
+    function calculate() {
+        const x = parseFloat(document.getElementById('input-x').value);
+        const m = parseFloat(document.getElementById('input-m').value);
+        const sd = parseFloat(document.getElementById('input-sd').value);
+        const r = parseFloat(document.getElementById('input-r').value);
+        const zCrit = parseFloat(document.getElementById('zcrit-select').value);
+
+        if (isNaN(x) || isNaN(m) || isNaN(sd) || isNaN(r) || sd <= 0 || r < 0 || r > 1) {
+            document.getElementById('res-z').innerText = "—";
+            document.getElementById('res-t').innerText = "—";
+            document.getElementById('res-sem').innerText = "—";
+            document.getElementById('res-ci').innerText = "—";
+            document.getElementById('severity-badge').innerText = "Severity: Invalid Input";
+            return;
+        }
+
+        // Formulas
+        const z = (x - m) / sd;
+        const tScore = 50 + (10 * z);
+        const sem = sd * Math.sqrt(1.0 - r);
+        const ciLower = x - (zCrit * sem);
+        const ciUpper = x + (zCrit * sem);
+
+        // Update Results Display
+        document.getElementById('res-z').innerText = z.toFixed(2);
+        document.getElementById('res-t').innerText = tScore.toFixed(2);
+        document.getElementById('res-sem').innerText = sem.toFixed(2);
+        document.getElementById('res-ci').innerText = `[${ciLower.toFixed(2)}, ${ciUpper.toFixed(2)}]`;
+
+        // Update Breakdown Steps
+        document.getElementById('step-z').innerText = `Step 1: z = (${x} − ${m}) / ${sd} = ${z.toFixed(3)}`;
+        document.getElementById('step-t').innerText = `Step 2: T = 50 + 10(${z.toFixed(3)}) = ${tScore.toFixed(2)}`;
+        document.getElementById('step-sem').innerText = `Step 3: SEM = ${sd} × √(1 − ${r}) = ${sem.toFixed(3)}`;
+        document.getElementById('step-ci').innerText = `Step 4: CI = ${x} ± ${zCrit} × ${sem.toFixed(3)} = [${ciLower.toFixed(2)}, ${ciUpper.toFixed(2)}]`;
+
+        // Determine Severity
+        const key = document.getElementById('preset-select').value;
+        const preset = INSTRUMENT_DATABASE[key] || INSTRUMENT_DATABASE['custom'];
+        const severity = getCutoffSeverity(preset, x);
+        document.getElementById('severity-badge').innerText = `Severity: ${severity.label}`;
+    }
+
+    function getCutoffSeverity(preset, x) {
+        if (preset.id === "custom") {
+            return { label: "Custom Assessment Range" };
+        }
+        for (let cutoff of preset.cutoffs) {
+            if (cutoff.min !== undefined && cutoff.max !== undefined) {
+                if (x >= cutoff.min && x <= cutoff.max) return cutoff;
+            } else if (cutoff.max !== undefined && x <= cutoff.max) {
+                return cutoff;
+            }
+        }
+        return { label: "Out of Normative Bounds" };
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+        onPresetChange();
+    });
+  </script>
+</body>
+</html>
