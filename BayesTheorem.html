@@ -72,7 +72,7 @@
                     <div class="bg-[#252525] p-4 rounded-lg border border-gray-700">
                         <div class="flex justify-between items-center mb-1">
                             <label id="lbl-d-title" class="text-xs font-bold text-[#ffff55]">D Total Prob (%)</label>
-                            <button onclick="toggleDMode()" id="btn-d-mode" class="text-[10px] text-[#38bdf8] underline hover:text-blue-300">Enter PPV Directly</button>
+                            <button onclick="toggleDMode()" id="btn-d-mode" class="text-[10px] text-[#38bdf8] underline hover:text-blue-300">Using PPV Directly</button>
                         </div>
                         <span id="lbl-d-desc" class="text-[10px] text-gray-400 block mb-2">Calculated via Specificity & Prevalence.</span>
 
@@ -455,13 +455,13 @@
             if (useSpecificity) {
                 containerSpec.classList.remove('hidden');
                 containerDirect.classList.add('hidden');
-                btnMode.innerText = "Enter PPV Directly";
+                btnMode.innerText = "Using PPV Directly";
                 desc.innerText = "Calculated via Specificity & Prevalence.";
                 titleD.innerText = "D Total Prob (%)";
             } else {
                 containerSpec.classList.add('hidden');
                 containerDirect.classList.remove('hidden');
-                btnMode.innerText = "Use Specificity";
+                btnMode.innerText = "Using Specificity";
                 desc.innerText = "Total proportion of positive tests.";
                 titleD.innerText = "D Total Prob (%) [Direct]";
             }
