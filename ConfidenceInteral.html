@@ -54,11 +54,11 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#334155] p-4 rounded-lg gap-3">
         <div>
           <h2 class="text-sm sm:text-base font-bold text-white">Instrument / Normative Preset Lookup</h2>
-          <p class="text-xs text-slate-300">Select a validated psychological assessment or set custom parameters[cite: 2].</p>
+          <p class="text-xs text-slate-300">Select a validated psychological assessment or set custom parameters.</p>
         </div>
         <select id="preset-select" onchange="onPresetChange()" class="w-full sm:w-auto bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white text-xs sm:text-sm focus:outline-none focus:border-sky-400">
-          <option value="custom">Custom / Manual Parameter Configuration</option>
-          <option value="PHQ-9" selected>PHQ-9 (Patient Health Questionnaire - 9)</option>
+          <option value="custom" selected>Custom / Manual Parameter Configuration</option>
+          <option value="PHQ-9">PHQ-9 (Patient Health Questionnaire - 9)</option>
           <option value="GAD-7">GAD-7 (Generalized Anxiety Disorder - 7)</option>
           <option value="PCL-5">PCL-5 (PTSD Checklist for DSM-5)</option>
         </select>
@@ -67,7 +67,7 @@
       <!-- Clinical Info Bar / Severity Badge / Citation -->
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#1e293b] p-4 rounded-lg border border-slate-700 gap-3">
         <div>
-          <h3 id="preset-title" class="text-sm sm:text-base font-bold text-white">PHQ-9 (Patient Health Questionnaire - 9)</h3>
+          <h3 id="preset-title" class="text-sm sm:text-base font-bold text-white">Custom / Manual Parameter Configuration</h3>
           <p id="preset-citation" class="text-xs text-sky-400 italic mt-0.5"></p>
         </div>
         <div id="severity-badge" class="bg-[#422006] text-[#fde047] text-xs font-bold px-3 py-1.5 rounded border border-amber-600/50">
@@ -80,35 +80,35 @@
         <!-- Input X -->
         <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
           <label class="block text-xs font-bold text-white mb-0.5">Raw Score (X)</label>
-          <span id="label-x-range" class="text-[10px] text-slate-400 block mb-2">Range: 0 to 27[cite: 2]</span>
-          <input id="input-x" type="number" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="12">
+          <span id="label-x-range" class="text-[10px] text-slate-400 block mb-2">Custom Raw Score</span>
+          <input id="input-x" type="number" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="24">
         </div>
 
         <!-- Input M -->
         <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
           <label class="block text-xs font-bold text-white mb-0.5">Normative Mean (M)</label>
-          <span class="text-[10px] text-slate-400 block mb-2">Population mean[cite: 2]</span>
-          <input id="input-m" type="number" step="0.1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="3.2">
+          <span class="text-[10px] text-slate-400 block mb-2">Population mean</span>
+          <input id="input-m" type="number" step="0.1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="15.0">
         </div>
 
         <!-- Input SD -->
         <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
           <label class="block text-xs font-bold text-white mb-0.5">Standard Dev (SD)</label>
-          <span class="text-[10px] text-slate-400 block mb-2">Population SD[cite: 2]</span>
-          <input id="input-sd" type="number" step="0.1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="4.1">
+          <span class="text-[10px] text-slate-400 block mb-2">Population SD</span>
+          <input id="input-sd" type="number" step="0.1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="5.0">
         </div>
 
         <!-- Input r -->
         <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
           <label class="block text-xs font-bold text-sky-400 mb-0.5">Reliability (r / α)</label>
-          <span class="text-[10px] text-slate-400 block mb-2">Internal consistency[cite: 2]</span>
-          <input id="input-r" type="number" step="0.01" min="0" max="1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="0.89">
+          <span class="text-[10px] text-slate-400 block mb-2">Internal consistency</span>
+          <input id="input-r" type="number" step="0.01" min="0" max="1" oninput="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400" value="0.85">
         </div>
 
         <!-- Confidence Level Selector -->
         <div class="bg-[#1e293b] p-3 rounded-lg border border-slate-700">
           <label class="block text-xs font-bold text-amber-400 mb-0.5">Confidence Level</label>
-          <span class="text-[10px] text-slate-400 block mb-2">Select critical z[cite: 2]</span>
+          <span class="text-[10px] text-slate-400 block mb-2">Select critical z</span>
           <select id="zcrit-select" onchange="calculate()" class="w-full bg-[#0f172a] border border-slate-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:border-sky-400">
             <option value="1.00">68% (z = 1.00)</option>
             <option value="1.645">90% (z = 1.645)</option>
@@ -140,7 +140,7 @@
 
       <!-- Step-by-Step Breakdown -->
       <div class="bg-[#1e293b] p-4 sm:p-5 rounded-lg border border-slate-700 space-y-2">
-        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider mb-2">STEP-BY-STEP CALCULATION BREAKDOWN[cite: 2]</h4>
+        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider mb-2">STEP-BY-STEP CALCULATION BREAKDOWN</h4>
         <div id="step-z" class="font-mono text-xs sm:text-sm text-slate-200">Step 1: z = (X − M) / SD</div>
         <div id="step-t" class="font-mono text-xs sm:text-sm text-slate-200">Step 2: T = 50 + 10(z)</div>
         <div id="step-sem" class="font-mono text-xs sm:text-sm text-slate-200">Step 3: SEM = SD × √(1 − r)</div>
@@ -152,7 +152,7 @@
   </div>
 
   <script>
-    // Instrument Database matching the provided Python script[cite: 2]
+    // Instrument Database
     const INSTRUMENT_DATABASE = {
         "custom": {
             "id": "custom",
@@ -170,9 +170,9 @@
             "name": "PHQ-9 (Patient Health Questionnaire - 9)",
             "m": 8.47,
             "sd": 6.17,
-            "r": 0.851 ,
-            "defaultX": 0,
-            "rangeText": "Range: 0 to 27[cite: 2]",
+            "r": 0.851,
+            "defaultX": 12.0,
+            "rangeText": "Range: 0 to 27",
             "cutoffs": [
                 {min: 0, max: 4, label: "Minimal Depression (0–4)"},
                 {min: 5, max: 9, label: "Mild Depression (5–9)"},
@@ -180,7 +180,7 @@
                 {min: 15, max: 19, label: "Moderately Severe Depression (15–19)"},
                 {min: 20, max: 27, label: "Severe Depression (20–27)"}
             ],
-            "citation": "Maroufizadeh et al. (2019)[cite: 2]"
+            "citation": "Maroufizadeh et al. (2019)"
         },
         "GAD-7": {
             "id": "GAD-7",
@@ -189,14 +189,14 @@
             "sd": 5.7,
             "r": 0.91,
             "defaultX": 8.0,
-            "rangeText": "Range: 0 to 21[]",
+            "rangeText": "Range: 0 to 21",
             "cutoffs": [
                 {min: 0, max: 4, label: "Minimal Anxiety (0–4)"},
                 {min: 5, max: 9, label: "Mild Anxiety (5–9)"},
                 {min: 10, max: 14, label: "Moderate Anxiety (10–14)"},
                 {min: 15, max: 21, label: "Severe Anxiety (15–21)"}
             ],
-            "citation": "White & Karr. (2023)[]"
+            "citation": "White & Karr (2023)"
         },
         "PCL-5": {
             "id": "PCL-5",
@@ -205,12 +205,13 @@
             "sd": 18.25,
             "r": 0.84,
             "defaultX": 38.0,
-            "rangeText": "Range: 0 to 80[cite: 2]",
+            "rangeText": "Range: 0 to 80",
             "cutoffs": [
                 {min: 0, max: 30, label: "Below PTSD Clinical Cutoff (< 31)"},
                 {min: 31, max: 80, label: "Probable PTSD Diagnosis (≥ 31–33 Cutoff)"}
             ],
-            "citation": "Roberts et al. (2021)[cite: 2]"
+            "citation": "Roberts et al. (2021)"
+        }
     };
 
     function onPresetChange() {
