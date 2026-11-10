@@ -61,8 +61,6 @@
           <option value="PHQ-9" selected>PHQ-9 (Patient Health Questionnaire - 9)</option>
           <option value="GAD-7">GAD-7 (Generalized Anxiety Disorder - 7)</option>
           <option value="PCL-5">PCL-5 (PTSD Checklist for DSM-5)</option>
-          <option value="BDI">BDI-II (Beck Depression Inventory-II)</option>
-          <option value="BAI">BAI (Beck Anxiety Inventory)</option>
         </select>
       </div>
 
@@ -170,10 +168,10 @@
         "PHQ-9": {
             "id": "PHQ-9",
             "name": "PHQ-9 (Patient Health Questionnaire - 9)",
-            "m": 3.2,
-            "sd": 4.1,
-            "r": 0.89,
-            "defaultX": 12.0,
+            "m": 8.47,
+            "sd": 6.17,
+            "r": 0.851 ,
+            "defaultX": 0,
             "rangeText": "Range: 0 to 27[cite: 2]",
             "cutoffs": [
                 {min: 0, max: 4, label: "Minimal Depression (0–4)"},
@@ -182,70 +180,37 @@
                 {min: 15, max: 19, label: "Moderately Severe Depression (15–19)"},
                 {min: 20, max: 27, label: "Severe Depression (20–27)"}
             ],
-            "citation": "Kroenke et al. (2001)[cite: 2]"
+            "citation": "Maroufizadeh et al. (2019)[cite: 2]"
         },
         "GAD-7": {
             "id": "GAD-7",
             "name": "GAD-7 (Generalized Anxiety Disorder - 7)",
-            "m": 2.9,
-            "sd": 4.3,
-            "r": 0.92,
+            "m": 7.4,
+            "sd": 5.7,
+            "r": 0.91,
             "defaultX": 8.0,
-            "rangeText": "Range: 0 to 21[cite: 2]",
+            "rangeText": "Range: 0 to 21[]",
             "cutoffs": [
                 {min: 0, max: 4, label: "Minimal Anxiety (0–4)"},
                 {min: 5, max: 9, label: "Mild Anxiety (5–9)"},
                 {min: 10, max: 14, label: "Moderate Anxiety (10–14)"},
                 {min: 15, max: 21, label: "Severe Anxiety (15–21)"}
             ],
-            "citation": "Spitzer et al. (2006)[cite: 2]"
+            "citation": "White & Karr. (2023)[]"
         },
         "PCL-5": {
             "id": "PCL-5",
             "name": "PCL-5 (PTSD Checklist for DSM-5)",
-            "m": 14.8,
-            "sd": 13.2,
-            "r": 0.94,
+            "m": 49.12,
+            "sd": 18.25,
+            "r": 0.84,
             "defaultX": 38.0,
             "rangeText": "Range: 0 to 80[cite: 2]",
             "cutoffs": [
                 {min: 0, max: 30, label: "Below PTSD Clinical Cutoff (< 31)"},
                 {min: 31, max: 80, label: "Probable PTSD Diagnosis (≥ 31–33 Cutoff)"}
             ],
-            "citation": "Blevins et al. (2015)[cite: 2]"
-        },
-        "BDI": {
-            "id": "BDI",
-            "name": "BDI-II (Beck Depression Inventory-II)",
-            "m": 12.5,
-            "sd": 9.8,
-            "r": 0.92,
-            "defaultX": 22.0,
-            "rangeText": "Range: 0 to 63[cite: 2]",
-            "cutoffs": [
-                {min: 0, max: 13, label: "Minimal Depression (0–13)"},
-                {min: 14, max: 19, label: "Mild Depression (14–19)"},
-                {min: 20, max: 28, label: "Moderate Depression (20–28)"},
-                {min: 29, max: 63, label: "Severe Depression (29–63)"}
-            ],
-            "citation": "Beck et al. (1996)[cite: 2]"
-        },
-        "BAI": {
-            "id": "BAI",
-            "name": "BAI (Beck Anxiety Inventory)",
-            "m": 13.1,
-            "sd": 10.2,
-            "r": 0.91,
-            "defaultX": 18.0,
-            "rangeText": "Range: 0 to 63[cite: 2]",
-            "cutoffs": [
-                {min: 0, max: 7, label: "Minimal Anxiety (0–7)"},
-                {min: 8, max: 15, label: "Mild Anxiety (8–15)"},
-                {min: 16, max: 25, label: "Moderate Anxiety (16–25)"},
-                {min: 26, max: 63, label: "Severe Anxiety (26–63)"}
-            ],
-            "citation": "Beck & Steer (1993)[cite: 2]"
-        }
+            "citation": "Roberts et al. (2021)[cite: 2]"
     };
 
     function onPresetChange() {
