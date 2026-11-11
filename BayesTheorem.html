@@ -38,7 +38,7 @@
                 Bayes Theorem is a way of calculating probability while taking into consideration the previous knowledge we have about a phenomenon. Based on conditional evidence. It was discovered by Thomas Bayes and developed independently by Pierre-Simon Laplace in the 18th century. It is proven to be mathematically true. It is not a theory or a hypothesis it is proven to be true. It has been used in genetics, brain imaging, and, importantly, for medical diagnosis
             </p>
             <p class="text-sm text-gray-300 leading-relaxed">
-                Start with the <span style="color:#55ffff" class="font-bold">prior</span> (prevalence), weigh it by the <span style="color:#55ff55" class="font-bold">likelihood</span> of a positive screen (sensitivity) and the overall <span style="color:#ffff55" class="font-bold">evidence</span> (how often the screen is positive for anyone, this involves specificity and sensitivity), and you get the <span style="color:#ff5555" class="font-bold">posterior</span>: the chance the client has the condition given a positive screen, also called positive predictive value (PPV). For example, with 85% sensitivity, 90% specificity, and 20% prevalence, a positive screen means about a 68% chance of the condition, not 85%. These terms were simplified for use with Mental Health Practioners.
+                Start with the <span style="color:#55ffff" class="font-bold">prior</span> (prevalence), weigh it by the <span style="color:#55ff55" class="font-bold">likelihood</span> of a positive screen (sensitivity) and the overall <span style="color:#ffff55" class="font-bold">evidence</span> (how often the screen is positive for anyone, this involves specificity and sensitivity), and you get the <span style="color:#ff5555" class="font-bold">posterior</span>: the chance the client has the condition given a positive screen. For example, with 85% sensitivity, 90% specificity, and 20% prevalence, a positive screen means about a 68% chance of the condition, not 85%. These terms were simplified for use with Mental Health Practioners.
             </p>
         </div>
 
@@ -72,7 +72,7 @@
                     <div class="bg-[#252525] p-4 rounded-lg border border-gray-700">
                         <div class="flex justify-between items-center mb-1">
                             <label id="lbl-d-title" class="text-xs font-bold text-[#ffff55]">D Total Prob (%)</label>
-                            <button onclick="toggleDMode()" id="btn-d-mode" class="text-[10px] text-[#38bdf8] underline hover:text-blue-300">Using PPV Directly</button>
+                            <button onclick="toggleDMode()" id="btn-d-mode" class="text-[10px] text-[#38bdf8] underline hover:text-blue-300">Using Evidence Directly</button>
                         </div>
                         <span id="lbl-d-desc" class="text-[10px] text-gray-400 block mb-2">Calculated via Specificity & Prevalence.</span>
 
@@ -207,7 +207,7 @@
 
                     <!-- Final Posterior Box -->
                     <div class="bg-black p-4 rounded-lg space-y-3">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">CALCULATED POSTERIOR PROBABILITY (PPV / A)</span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">CALCULATED POSTERIOR PROBABILITY </span>
                         <p id="inst-desc" class="text-xs text-gray-300"></p>
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <span id="inst-final-posterior" class="text-2xl font-mono font-bold text-[#ff5555]">—</span>
@@ -353,7 +353,7 @@
                         ${k('A', 'P(Dx | +)')} ${op('=')} ${k('B', 'P(+ | Dx)')} ${op('×')} ${k('C', 'P(Dx)')} ${op('/')} ${k('D', 'P(+)')}
                     </div>
                     <div class="text-center text-xs sm:text-sm whitespace-nowrap">
-                        ${k('A', 'Posterior (PPV)')} ${op('=')} ${k('B', 'Sensitivity')} ${op('×')} ${k('C', 'Prevalence')} ${op('/')} ${k('D', 'Total Positive Prob')}
+                        ${k('A', 'Posterior')} ${op('=')} ${k('B', 'Sensitivity')} ${op('×')} ${k('C', 'Prevalence')} ${op('/')} ${k('D', 'Total Positive Prob')}
                     </div>
                     <div class="text-center font-mono text-[11px] text-gray-400 whitespace-nowrap">
                         where ${k('D', 'D')} = (${k('B', 'B')} × ${k('C', 'C')}) + ((1 − ${k('spec', 'Spec')}) × (1 − ${k('C', 'C')}))
@@ -364,7 +364,7 @@
                     <div class="bg-[#252525] p-3 rounded border border-[#ff5555]">
                         <span class="font-bold text-[#ff5555]">A | P(Dx | +)</span>
                         <div class="font-bold text-white mt-1">Posterior</div>
-                        <div class="text-[10px] text-gray-400">PPV (Positive Predictive Value)</div>
+                        <div class="text-[10px] text-gray-400"> </div>
                         <div id="${p}-a" class="text-lg font-mono font-bold text-[#ff5555] mt-2">—</div>
                     </div>
                     <div class="bg-[#252525] p-3 rounded border border-[#55ff55]">
@@ -455,7 +455,7 @@
             if (useSpecificity) {
                 containerSpec.classList.remove('hidden');
                 containerDirect.classList.add('hidden');
-                btnMode.innerText = "Using PPV Directly";
+                btnMode.innerText = "Using Evidence Directly";
                 desc.innerText = "Calculated via Specificity & Prevalence.";
                 titleD.innerText = "D Total Prob (%)";
             } else {
